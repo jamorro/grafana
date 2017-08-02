@@ -53,9 +53,15 @@ class SingleStatCtrl extends MetricsPanelCtrl {
     prefixFontSize: '50%',
     valueFontSize: '80%',
     postfixFontSize: '50%',
+
+    imageFontSize: '50%',
     thresholds: '',
     colorBackground: false,
     colorValue: false,
+    showLimits: false,
+    imageLink: '',
+    showImage: false,
+    flashLimits: false,
     colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)"],
     sparkline: {
       show: false,
@@ -376,27 +382,112 @@ class SingleStatCtrl extends MetricsPanelCtrl {
       if (color) {
         return '<span style="color:' + color + '">'+ valueString + '</span>';
       }
-
       return valueString;
     }
 
-    function getSpan(className, fontSize, value)  {
+    function getSpan(className, fontSize, value,)  {
       value = templateSrv.replace(value, data.scopedVars);
       return '<span class="' + className + '" style="font-size:' + fontSize + '">' +
         value + '</span>';
     }
 
     function getBigValueHtml() {
-      var body = '<div class="singlestat-panel-value-container">';
-
-      if (panel.prefix) { body += getSpan('singlestat-panel-prefix', panel.prefixFontSize, panel.prefix); }
+      var body = '';
+      body = '<div class="singlestat-panel-value-container">';
+      if (panel.showLimits) { body = getLimitsHtml() + body; }
 
       var value = applyColoringThresholds(data.value, data.valueFormatted);
-      body += getSpan('singlestat-panel-value', panel.valueFontSize, value);
+      var spvclass = 'singlestat-panel-value';
 
-      if (panel.postfix) { body += getSpan('singlestat-panel-postfix', panel.postfixFontSize, panel.postfix); }
+      if (panel.prefix) { body += getSpan('singlestat-panel-prefix', panel.prefixFontSize, panel.prefix); }
+      if (panel.flashLimits && (data.value < data.thresholds[0] || (data.thresholds.length > 1 && data.value > data.thresholds[1]))) {
+            spvclass += ' singlestat-flash';
+      }
+      if (panel.floatTextRight) {
+        body += '<div class="floatTextRight">';
+        body += getSpan(spvclass, panel.valueFontSize, value);
+        if (panel.postfix) { body += getSpan('singlestat-panel-postfix', panel.postfixFontSize, panel.postfix); }
+        body += '</div>';
+      } else {
+        body += getSpan(spvclass, panel.valueFontSize, value);
+        if (panel.postfix) { body += getSpan('singlestat-panel-postfix', panel.postfixFontSize, panel.postfix); }
+      }
+      if (panel.showImage) {body += getImg();}
+      body += '</div>';
+
+      //console.log("hela body" +body);
+      return body;
+    }
+
+function getImg(){
+    var body = '';
+
+    if (ctrl.panel.imageLink !== '') {
+        body += '<div class="singlestat-panel-image-container">';
+        body += '<img src="'+ctrl.panel.postfix+'">';
+        body += '</div>';
+        return body;
+    } else if (ctrl.panel.postfix === '') {
+        body += '<div class="singlestat-panel-image-container">';
+        body += '<img class="singlestat-panel-image" src="http://bit.ly/1rX5ooS">';
+        body += '</div>';
+        return body;
+
+    } else if (ctrl.panel.postfix === " Errors/s"){
+        console.log("errors");
+        var linkerrors = "http://imgur.com/HqDMAZu.png";
+        body += '<div class="singlestat-panel-image-container">';
+        body += '<img class="singlestat-panel-image" src="'+linkerrors+'">';
+        body += '</div>';
+        return body;
+
+    } else if (ctrl.panel.postfix === " Mbit/s"){
+        console.log(" speed");
+        var linkpps = "http://imgur.com/HYXBMgE.png";
+        body += '<div class="singlestat-panel-image-container">';
+        body += '<img class="singlestat-panel-image" src="'+linkpps+'">';
+        body += '</div>';
+        return body;
+
+    } else if (ctrl.panel.postfix === " Packets/s"){
+        console.log(" errors");
+        var linkcongestions = "http://imgur.com/a/5mSct.png";
+        body += '<div class="singlestat-panel-image-container">';
+        body += '<img class="singlestat-panel-image" src="'+linkcongestions+'">';
+        body += '</div>';
+        return body;
+    } else {
+      body += '<div class="singlestat-panel-image-container">';
 
       body += '</div>';
+    }
+
+}
+
+function getLimitsHtml() {
+      var body = '';
+      if (data.thresholds) {
+        body += '<div class="singlestat-panel-limits-container">';
+        body += '<span class="singlestat-panel-low-limit-container';
+        if (panel.flashLimits && data.value < data.thresholds[0]) {
+          body += ' singlestat-flash';
+        }
+        body += '">';
+        body += '<span style="color:' + data.colorMap[0] + '">'+ data.thresholds[0] + '</span>';
+        body += '</span>';
+
+        if (data.thresholds.length > 1) {
+          body += '<span class="singlestat-panel-high-limit-container';
+          if (panel.flashLimits && data.value > data.thresholds[1]) {
+            body += ' singlestat-flash';
+          }
+          body += '">';
+          body += '<span style="color:' + data.colorMap[2] + '">'+ data.thresholds[1] + '</span>';
+          body += '</span>';
+        }
+
+        body += '</div>';
+      }
 
       return body;
     }

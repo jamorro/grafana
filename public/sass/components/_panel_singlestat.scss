@@ -7,11 +7,54 @@
 .singlestat-panel-value-container {
   display: table-cell;
   vertical-align: middle;
-  text-align: center;
   position: relative;
   z-index: 1;
   font-size: 3em;
   font-weight: bold;
+  text-align: center;
+}
+.floatTextRight {
+  position: relative;
+  float: right;
+}
+
+.singlestat-panel-image {
+  Position: absolute;
+  margin: 10px;
+  top: 3%;
+  vertical-align: top;
+  height: 90%;
+  display: inline-block;
+}
+.singlestat-panel-limits-container {
+    width: 100%;
+
+    position: absolute;
+    font-size: 2em;
+}
+
+.singlestat-panel-low-limit-container {
+  float: left;
+}
+
+.singlestat-panel-high-limit-container {
+  float: right;
+}
+
+.singlestat-panel-image-container {
+    float: left;
+}
+
+
+
+.singlestat-flash {
+  animation: singlestat-flash 1s infinite;
+}
+
+@keyframes singlestat-flash {
+    0% { font-weight: bold; }
+    50% { font-weight: normal; }
+    100% { font-weight: bold; }
 }
 
 .singlestat-panel-prefix {

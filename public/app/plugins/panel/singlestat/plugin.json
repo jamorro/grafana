@@ -6,7 +6,7 @@
   "info": {
     "author": {
       "name": "Grafana Project",
-      "url": "https://grafana.com"
+      "url": "http://grafana.org"
 },
     "logos": {
       "small": "img/icn-singlestat-panel.svg",
